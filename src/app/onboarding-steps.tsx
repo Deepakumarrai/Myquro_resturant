@@ -12,7 +12,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,10 +22,28 @@ const IMAGE_HEIGHT = width * (1289 / 1220);
 export default function OnboardingStepsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const params = useLocalSearchParams<{ step?: string }>();
+
+  const currentActiveStep = params.step ? parseInt(params.step) : 1;
 
   const handleProceedStep1 = () => {
-    // Navigate to step 1 form or next flow
-    router.push('/(tabs)');
+    // Navigate to Restaurant Information (Step 1)
+    router.push('/restaurant-information');
+  };
+
+  const handleProceedStep2 = () => {
+    // Navigate to Restaurant Documents (Step 2)
+    router.push('/restaurant-documents');
+  };
+
+  const handleProceedStep3 = () => {
+    // Navigate to Menu Setup (Step 3)
+    router.push('/menu-setup');
+  };
+
+  const handleProceedStep4 = () => {
+    // Navigate to Partner Contract (Step 4)
+    router.push('/partner-contract');
   };
 
   return (
@@ -90,87 +108,311 @@ export default function OnboardingStepsScreen() {
 
           {/* Main Steps Container Card (Translucent Glassmorphism) */}
           <View style={styles.stepsCard}>
-            {/* STEP 1 (Active) */}
+            {/* STEP 1: Restaurant Information */}
             <View style={styles.stepContainer}>
               <View style={styles.timelineLeftColumn}>
-                <View style={styles.activeStepBadge}>
-                  <Text style={styles.activeStepText}>1</Text>
-                </View>
+                {currentActiveStep > 1 ? (
+                  <View style={styles.completedStepBadge}>
+                    <Ionicons name="checkmark" size={18} color="#0B0D12" />
+                  </View>
+                ) : (
+                  <View style={styles.activeStepBadge}>
+                    <Text style={styles.activeStepText}>1</Text>
+                  </View>
+                )}
                 {/* Dotted Connecting Line */}
                 <View style={styles.dottedLine} />
               </View>
 
               <View style={styles.stepContentColumn}>
-                <Text style={styles.stepLabelActive}>STEP 1</Text>
+                <View style={styles.stepHeaderRow}>
+                  <Text style={styles.stepLabelActive}>STEP 1</Text>
+                  {currentActiveStep > 1 && (
+                    <Text style={styles.completedLabelText}>Completed ✓</Text>
+                  )}
+                </View>
                 <Text style={styles.stepTitle}>Restaurant Information</Text>
                 <Text style={styles.stepDescription}>
                   Location, Owner details, Open & Close hrs.
                 </Text>
 
-                {/* Proceed Button */}
-                <TouchableOpacity
-                  activeOpacity={0.88}
-                  style={styles.proceedButton}
-                  onPress={handleProceedStep1}
-                >
-                  <LinearGradient
-                    colors={['#FDC830', '#F39C12', '#E67E22']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={styles.proceedGradient}
+                {currentActiveStep === 1 ? (
+                  /* Proceed Button for Step 1 */
+                  <TouchableOpacity
+                    activeOpacity={0.88}
+                    style={styles.proceedButton}
+                    onPress={handleProceedStep1}
                   >
-                    <Text style={styles.proceedText}>Proceed</Text>
-                    <Ionicons name="chevron-forward" size={18} color="#0B0D12" />
-                  </LinearGradient>
-                </TouchableOpacity>
+                    <LinearGradient
+                      colors={['#FDC830', '#F39C12', '#E67E22']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.proceedGradient}
+                    >
+                      <Text style={styles.proceedText}>Proceed</Text>
+                      <Ionicons
+                        name="chevron-forward"
+                        size={18}
+                        color="#0B0D12"
+                      />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                ) : (
+                  /* Edit action if completed */
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.editStepRow}
+                    onPress={handleProceedStep1}
+                  >
+                    <Text style={styles.editStepText}>Edit details</Text>
+                    <Ionicons name="pencil" size={13} color="#F5A623" />
+                  </TouchableOpacity>
+                )}
 
                 <View style={styles.stepDivider} />
               </View>
             </View>
 
-            {/* STEP 2 */}
+            {/* STEP 2: Restaurant Documents */}
             <View style={styles.stepContainer}>
               <View style={styles.timelineLeftColumn}>
-                <View style={styles.inactiveStepBadge}>
-                  <Text style={styles.inactiveStepText}>2</Text>
-                </View>
+                {currentActiveStep === 2 ? (
+                  <View style={styles.activeStepBadge}>
+                    <Text style={styles.activeStepText}>2</Text>
+                  </View>
+                ) : currentActiveStep > 2 ? (
+                  <View style={styles.completedStepBadge}>
+                    <Ionicons name="checkmark" size={18} color="#0B0D12" />
+                  </View>
+                ) : (
+                  <View style={styles.inactiveStepBadge}>
+                    <Text style={styles.inactiveStepText}>2</Text>
+                  </View>
+                )}
                 <View style={styles.dottedLine} />
               </View>
 
               <View style={styles.stepContentColumn}>
-                <Text style={styles.stepLabelInactive}>STEP 2</Text>
-                <Text style={styles.stepTitleInactive}>Restaurant Documents</Text>
+                <View style={styles.stepHeaderRow}>
+                  <Text
+                    style={
+                      currentActiveStep >= 2
+                        ? styles.stepLabelActive
+                        : styles.stepLabelInactive
+                    }
+                  >
+                    STEP 2
+                  </Text>
+                  {currentActiveStep > 2 && (
+                    <Text style={styles.completedLabelText}>Completed ✓</Text>
+                  )}
+                </View>
+                <Text
+                  style={
+                    currentActiveStep >= 2
+                      ? styles.stepTitle
+                      : styles.stepTitleInactive
+                  }
+                >
+                  Restaurant Documents
+                </Text>
+
+                {currentActiveStep === 2 ? (
+                  <>
+                    <Text style={styles.stepDescription}>
+                      FSSAI certificate, Bank details, PAN card, GSTIN
+                    </Text>
+                    {/* Proceed Button for Step 2 */}
+                    <TouchableOpacity
+                      activeOpacity={0.88}
+                      style={styles.proceedButton}
+                      onPress={handleProceedStep2}
+                    >
+                      <LinearGradient
+                        colors={['#FDC830', '#F39C12', '#E67E22']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.proceedGradient}
+                      >
+                        <Text style={styles.proceedText}>Proceed</Text>
+                        <Ionicons
+                          name="chevron-forward"
+                          size={18}
+                          color="#0B0D12"
+                        />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </>
+                ) : currentActiveStep > 2 ? (
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.editStepRow}
+                    onPress={handleProceedStep2}
+                  >
+                    <Text style={styles.editStepText}>Edit details</Text>
+                    <Ionicons name="pencil" size={13} color="#F5A623" />
+                  </TouchableOpacity>
+                ) : null}
+
                 <View style={styles.stepDivider} />
               </View>
             </View>
 
-            {/* STEP 3 */}
+            {/* STEP 3: Menu Setup */}
             <View style={styles.stepContainer}>
               <View style={styles.timelineLeftColumn}>
-                <View style={styles.inactiveStepBadge}>
-                  <Text style={styles.inactiveStepText}>3</Text>
-                </View>
+                {currentActiveStep === 3 ? (
+                  <View style={styles.activeStepBadge}>
+                    <Text style={styles.activeStepText}>3</Text>
+                  </View>
+                ) : currentActiveStep > 3 ? (
+                  <View style={styles.completedStepBadge}>
+                    <Ionicons name="checkmark" size={18} color="#0B0D12" />
+                  </View>
+                ) : (
+                  <View style={styles.inactiveStepBadge}>
+                    <Text style={styles.inactiveStepText}>3</Text>
+                  </View>
+                )}
                 <View style={styles.dottedLine} />
               </View>
 
               <View style={styles.stepContentColumn}>
-                <Text style={styles.stepLabelInactive}>STEP 3</Text>
-                <Text style={styles.stepTitleInactive}>Menu Setup</Text>
+                <View style={styles.stepHeaderRow}>
+                  <Text
+                    style={
+                      currentActiveStep >= 3
+                        ? styles.stepLabelActive
+                        : styles.stepLabelInactive
+                    }
+                  >
+                    STEP 3
+                  </Text>
+                  {currentActiveStep > 3 && (
+                    <Text style={styles.completedLabelText}>Completed ✓</Text>
+                  )}
+                </View>
+                <Text
+                  style={
+                    currentActiveStep >= 3
+                      ? styles.stepTitle
+                      : styles.stepTitleInactive
+                  }
+                >
+                  Menu Setup
+                </Text>
+
+                {currentActiveStep === 3 ? (
+                  <>
+                    <Text style={styles.stepDescription}>
+                      Food images, item names, prices, dish descriptions
+                    </Text>
+                    {/* Proceed Button for Step 3 */}
+                    <TouchableOpacity
+                      activeOpacity={0.88}
+                      style={styles.proceedButton}
+                      onPress={handleProceedStep3}
+                    >
+                      <LinearGradient
+                        colors={['#FDC830', '#F39C12', '#E67E22']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.proceedGradient}
+                      >
+                        <Text style={styles.proceedText}>Proceed</Text>
+                        <Ionicons
+                          name="chevron-forward"
+                          size={18}
+                          color="#0B0D12"
+                        />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </>
+                ) : currentActiveStep > 3 ? (
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    style={styles.editStepRow}
+                    onPress={handleProceedStep3}
+                  >
+                    <Text style={styles.editStepText}>Edit details</Text>
+                    <Ionicons name="pencil" size={13} color="#F5A623" />
+                  </TouchableOpacity>
+                ) : null}
+
                 <View style={styles.stepDivider} />
               </View>
             </View>
 
-            {/* STEP 4 */}
+            {/* STEP 4: Partner Contract */}
             <View style={[styles.stepContainer, { marginBottom: 0 }]}>
               <View style={styles.timelineLeftColumn}>
-                <View style={styles.inactiveStepBadge}>
-                  <Text style={styles.inactiveStepText}>4</Text>
-                </View>
+                {currentActiveStep === 4 ? (
+                  <View style={styles.activeStepBadge}>
+                    <Text style={styles.activeStepText}>4</Text>
+                  </View>
+                ) : currentActiveStep > 4 ? (
+                  <View style={styles.completedStepBadge}>
+                    <Ionicons name="checkmark" size={18} color="#0B0D12" />
+                  </View>
+                ) : (
+                  <View style={styles.inactiveStepBadge}>
+                    <Text style={styles.inactiveStepText}>4</Text>
+                  </View>
+                )}
               </View>
 
               <View style={styles.stepContentColumn}>
-                <Text style={styles.stepLabelInactive}>STEP 4</Text>
-                <Text style={styles.stepTitleInactive}>Partner Contract</Text>
+                <View style={styles.stepHeaderRow}>
+                  <Text
+                    style={
+                      currentActiveStep >= 4
+                        ? styles.stepLabelActive
+                        : styles.stepLabelInactive
+                    }
+                  >
+                    STEP 4
+                  </Text>
+                  {currentActiveStep > 4 && (
+                    <Text style={styles.completedLabelText}>Completed ✓</Text>
+                  )}
+                </View>
+                <Text
+                  style={
+                    currentActiveStep >= 4
+                      ? styles.stepTitle
+                      : styles.stepTitleInactive
+                  }
+                >
+                  Partner Contract
+                </Text>
+
+                {currentActiveStep === 4 ? (
+                  <>
+                    <Text style={styles.stepDescription}>
+                      Commission rates, delivery terms, partner agreement
+                    </Text>
+                    {/* Proceed Button for Step 4 */}
+                    <TouchableOpacity
+                      activeOpacity={0.88}
+                      style={styles.proceedButton}
+                      onPress={handleProceedStep4}
+                    >
+                      <LinearGradient
+                        colors={['#FDC830', '#F39C12', '#E67E22']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.proceedGradient}
+                      >
+                        <Text style={styles.proceedText}>Proceed</Text>
+                        <Ionicons
+                          name="chevron-forward"
+                          size={18}
+                          color="#0B0D12"
+                        />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </>
+                ) : null}
               </View>
             </View>
           </View>
@@ -273,16 +515,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
-  heroImageWrapper: {
-    width: 135,
-    height: 135,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heroGraphic: {
-    width: '100%',
-    height: '100%',
-  },
 
   /* Steps Card */
   stepsCard: {
@@ -327,6 +559,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#F5A623',
   },
+  completedStepBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#F5A623',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#F5A623',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.75,
+    shadowRadius: 6,
+    elevation: 3,
+  },
   inactiveStepBadge: {
     width: 28,
     height: 28,
@@ -352,12 +597,35 @@ const styles = StyleSheet.create({
   stepContentColumn: {
     flex: 1,
   },
+  stepHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
   stepLabelActive: {
     fontFamily: 'Urbanist-Bold',
     fontSize: 11,
     letterSpacing: 1.2,
     color: '#F5A623',
     marginBottom: 4,
+  },
+  completedLabelText: {
+    fontFamily: 'Urbanist-Bold',
+    fontSize: 11.5,
+    color: '#F5A623',
+  },
+  editStepRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+    marginBottom: 10,
+  },
+  editStepText: {
+    fontFamily: 'Urbanist-SemiBold',
+    fontSize: 12.5,
+    color: '#F5A623',
+    marginRight: 4,
   },
   stepTitle: {
     fontFamily: 'Urbanist-Bold',
