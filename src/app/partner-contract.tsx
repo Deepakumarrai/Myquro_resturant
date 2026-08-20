@@ -54,17 +54,8 @@ export default function PartnerContractScreen() {
 
   const handleFinalProceed = () => {
     setIsTermsModalVisible(false);
-    // User accepted terms and contract
-    Alert.alert(
-      'Contract Accepted',
-      'Congratulations! Your partner agreement has been recorded successfully.',
-      [
-        {
-          text: 'OK',
-          onPress: () => router.replace('/'),
-        },
-      ]
-    );
+    // User accepted terms and contract - redirect to thank you success screen
+    router.replace('/thank-you');
   };
 
   return (

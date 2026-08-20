@@ -60,6 +60,7 @@ export default function RestaurantOnboardingScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
+
   // Animated opacity for ultra-smooth 60fps cross-fade for both image and headline
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
