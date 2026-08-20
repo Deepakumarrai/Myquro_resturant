@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { useOrderStore, Order } from '../../state/orderStore';
+import { useComplaintStore } from '../../state/complaintStore';
 
 const { width } = Dimensions.get('window');
 
@@ -37,10 +38,15 @@ export default function RestaurantDashboard() {
     rejectOrder,
   } = useOrderStore();
 
-  // Load orders on mount
+  const { complaints, loadComplaints, getActiveComplaintsCount } = useComplaintStore();
+
+  // Load orders and complaints on mount
   useEffect(() => {
     loadOrders();
+    loadComplaints();
   }, []);
+
+  const activeComplaintsCount = getActiveComplaintsCount();
 
   // Automatically generate new orders every 15 seconds (only when online)
   useEffect(() => {
@@ -416,16 +422,23 @@ export default function RestaurantDashboard() {
           activeOpacity={0.8}
           style={styles.bottomTabItem}
           onPress={() => {
-            setActiveBottomTab('Complaints');
             setShowMoreMenu(false);
+            router.push('/complaints');
           }}
         >
-          <Ionicons
-            name={activeBottomTab === 'Complaints' && !showMoreMenu ? 'warning' : 'warning-outline'}
-            size={22}
-            color={activeBottomTab === 'Complaints' && !showMoreMenu ? '#F5A623' : 'rgba(255, 255, 255, 0.4)'}
-          />
-          <Text style={[styles.bottomTabLabel, activeBottomTab === 'Complaints' && !showMoreMenu && styles.bottomTabLabelActive]}>
+          <View style={{ position: 'relative' }}>
+            <Ionicons
+              name="warning-outline"
+              size={22}
+              color="rgba(255, 255, 255, 0.4)"
+            />
+            {activeComplaintsCount > 0 && (
+              <View style={styles.complaintsTabBadge}>
+                <Text style={styles.complaintsTabBadgeText}>{activeComplaintsCount}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.bottomTabLabel}>
             Complaints
           </Text>
         </TouchableOpacity>
@@ -471,6 +484,17 @@ export default function RestaurantDashboard() {
             <View style={styles.modalDivider} />
 
             {/* Menu Items */}
+            <TouchableOpacity 
+              style={styles.modalMenuItem} 
+              onPress={() => {
+                setShowMoreMenu(false);
+                router.push('/complaints');
+              }}
+            >
+              <Ionicons name="warning-outline" size={20} color="#F5A623" style={styles.modalMenuIcon} />
+              <Text style={styles.modalMenuText}>Customer Complaints & Issues ({activeComplaintsCount})</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity 
               style={styles.modalMenuItem} 
               onPress={() => {
@@ -1000,6 +1024,23 @@ const styles = StyleSheet.create({
   },
   raisedUnderlineActive: {
     backgroundColor: '#F5A623',
+  },
+  complaintsTabBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    backgroundColor: '#EF4444',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  complaintsTabBadgeText: {
+    fontFamily: 'Urbanist-ExtraBold',
+    fontSize: 9.5,
+    color: '#FFFFFF',
   },
 
   /* More Modal Styles */
