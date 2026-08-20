@@ -202,16 +202,41 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   addSimulatedOrder: async (isOnline: boolean) => {
     if (!isOnline) return;
     const names = ['Amit Patel', 'Sneha Reddy', 'Rajesh Kumar', 'Vikram Singh', 'Neha Sharma', 'Divya Rao', 'Karan Johar', 'Sunita Roy'];
-    const dishes = [
-      { name: 'Butter Chicken', price: 280 },
-      { name: 'Dal Makhani', price: 180 },
-      { name: 'Kadhai Paneer', price: 220 },
-      { name: 'Garlic Naan', price: 40 },
-      { name: 'Tandoori Roti', price: 20 },
-      { name: 'Veg Pulao', price: 140 },
-      { name: 'Masala Dosa', price: 110 },
-      { name: 'Samosa', price: 30 },
+    
+    let activeDishList: { name: string; price: number }[] = [
+      { name: 'Butterscotch (Regular) + Chocolate Syrup', price: 140 },
+      { name: 'Signature Crispy Veg Burger (Double Patty)', price: 219 },
+      { name: 'Smoky Grilled Chicken Crunch', price: 229 },
+      { name: 'Classic Margherita Pizza (Medium)', price: 269 },
+      { name: 'Crispy Peri Peri Crinkle Fries', price: 119 },
+      { name: 'Kulhad Masala Chai & Maska Bun', price: 70 },
+      { name: 'Belgian Dark Chocolate Sundae', price: 140 },
     ];
+
+    try {
+      const menuDataStr = await AsyncStorage.getItem('@myquro_restaurant_menu_v1');
+      if (menuDataStr) {
+        const parsed = JSON.parse(menuDataStr);
+        if (parsed.dishes && parsed.dishes.length > 0) {
+          const availableDishes = parsed.dishes.filter((d: any) => d.isAvailable);
+          if (availableDishes.length > 0) {
+            activeDishList = availableDishes.map((d: any) => {
+              if (d.hasVariants && d.variants && d.variants.length > 0) {
+                const randomVariant = d.variants[Math.floor(Math.random() * d.variants.length)];
+                return {
+                  name: `${d.name} (${randomVariant.name})`,
+                  price: randomVariant.price,
+                };
+              }
+              return {
+                name: d.name,
+                price: d.basePrice,
+              };
+            });
+          }
+        }
+      }
+    } catch {}
 
     const randomId = `MQ-${Math.floor(1000 + Math.random() * 9000)}`;
     const randomName = names[Math.floor(Math.random() * names.length)];
@@ -223,7 +248,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     let total = 0;
 
     for (let i = 0; i < itemCount; i++) {
-      const dish = dishes[Math.floor(Math.random() * dishes.length)];
+      const dish = activeDishList[Math.floor(Math.random() * activeDishList.length)];
       const qty = Math.floor(1 + Math.random() * 2);
       selectedItems.push({
         name: dish.name,

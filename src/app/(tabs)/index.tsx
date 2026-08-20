@@ -374,16 +374,16 @@ export default function RestaurantDashboard() {
           activeOpacity={0.8}
           style={styles.bottomTabItem}
           onPress={() => {
-            setActiveBottomTab('Menu');
             setShowMoreMenu(false);
+            router.push('/menu-management');
           }}
         >
           <Ionicons
-            name={activeBottomTab === 'Menu' && !showMoreMenu ? 'book' : 'book-outline'}
+            name="book-outline"
             size={22}
-            color={activeBottomTab === 'Menu' && !showMoreMenu ? '#F5A623' : 'rgba(255, 255, 255, 0.4)'}
+            color="rgba(255, 255, 255, 0.4)"
           />
-          <Text style={[styles.bottomTabLabel, activeBottomTab === 'Menu' && !showMoreMenu && styles.bottomTabLabelActive]}>
+          <Text style={styles.bottomTabLabel}>
             Menu
           </Text>
         </TouchableOpacity>
@@ -471,6 +471,28 @@ export default function RestaurantDashboard() {
             <View style={styles.modalDivider} />
 
             {/* Menu Items */}
+            <TouchableOpacity 
+              style={styles.modalMenuItem} 
+              onPress={() => {
+                setShowMoreMenu(false);
+                router.push('/menu-management');
+              }}
+            >
+              <Ionicons name="restaurant-outline" size={20} color="#F5A623" style={styles.modalMenuIcon} />
+              <Text style={styles.modalMenuText}>Menu Management (Categories & Dishes)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.modalMenuItem} 
+              onPress={() => {
+                setShowMoreMenu(false);
+                router.push('/menu-preview');
+              }}
+            >
+              <Ionicons name="eye-outline" size={20} color="#F5A623" style={styles.modalMenuIcon} />
+              <Text style={styles.modalMenuText}>Preview Customer Menu</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity 
               style={styles.modalMenuItem} 
               onPress={() => {
